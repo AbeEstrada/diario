@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article</title>
+    <style>
+    html {
+        margin: 0;
+        padding: 0;
+        -webkit-text-size-adjust: none;
+    }
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: HelveticaNeue, Helvetica, Arial;
+        font-size: 18px;
+    }
+    a {
+        color: #000;
+        text-decoration: none;
+        border-bottom: 1px solid #00384B;
+        -webkit-touch-callout: none !important; /* hide tap & hold menu */
+        -webkit-tap-highlight-color: rgba(0,0,0,0); /* hide highlight */
+        outline: 0;
+    }
+    i, em {
+        font-style: italic;
+    }
+    img {
+        width: 100%;
+    }
+    b, strong {
+        font-family: HelveticaNeue-Bold, HelveticaNeue, Helvetica, Arial;
+    }
+    h1, h2 {
+        margin: 5px 10px 20px 10px;
+        padding: 0;
+        font-size: 23px;
+        line-height: 25px;
+    }
+    h2 {
+        font-size: 19px;
+    }
+    h3, h4, h5 {
+        font-size: 16px;
+        font-weight: normal;
+        color: #444;
+    }
+    #content {
+        margin: 0 10px;
+
+        hyphens: auto;
+        -webkit-hyphens: auto;
+        -webkit-hyphenate-character: "\2010";
+        -webkit-hyphenate-limit-after: 1;
+        -webkit-hyphenate-limit-before: 3;
+    }
+    .swipe {
+        position: relative;
+        visibility: hidden;
+        overflow: hidden;
+    }
+    .swipe-wrap {
+        position: relative;
+        overflow: hidden;
+    }
+    .swipe-wrap > div {
+        position: relative;
+        float: left;
+        width: 100%;
+    }
+    #pages {
+        font-size: 14px;
+        text-align: center;
+    }
+    .youtube {
+        position: relative;
+        width: 100%;
+        height: 0;
+        padding-bottom: 56.25%;
+        overflow: hidden;
+    }
+
+    .youtube iframe,
+    .youtube object,
+    .youtube embed {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="title"></h1>
+        <div id="images"></div>
+        <div id="content"></div>
+    </div>
+    <script>{{swipejs}}</script>
+    <script>
+        var json = {{json}};
+
+        document.getElementById('title').innerHTML = json.title;
+        document.getElementById('content').innerHTML = json.content;
+
+        var images = document.getElementById('images');
+        if (json.video) {
+            var video = document.createElement('iframe');
+            video.setAttribute('border', '0');
+            video.setAttribute('src', json.video);
+            images.appendChild(video);
+
+        } else if (json.image) {
+            var img = document.createElement('img');
+            img.setAttribute('src', json.image);
+            images.appendChild(img);
+
+        } else if (json.images.length > 1) {
+            images.className = 'swipe';
+            var wrap = document.createElement('div');
+            wrap.className = 'swipe-wrap';
+
+            for (var i = 0; i < json.images.length; i++) {
+                var image = json.images[i]
+                var img = document.createElement('img');
+                img.setAttribute('src', image);
+
+                var div = document.createElement('div');
+                div.appendChild(img);
+                wrap.appendChild(div);
+            };
+
+            images.appendChild(wrap);
+            var pages = document.createElement('div');
+            pages.setAttribute('id', 'pages');
+            images.appendChild(pages);
+            window.iSwipe = Swipe(document.getElementById('images'), {
+                continuous: false,
+                callback: function(index, element) {
+                    var pages = document.getElementById('pages');
+                    pages.innerHTML = (parseInt(iSwipe.getPos())+1)+'/'+iSwipe.getNumSlides();
+                }
+            });
+            pages = document.getElementById('pages');
+            pages.innerHTML = (parseInt(iSwipe.getPos())+1)+'/'+iSwipe.getNumSlides();
+        }
+    </script>
+</body>
+</html>
